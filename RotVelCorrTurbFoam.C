@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     #include "readTimeControls.H" 
     
     #include "readTransportProperties.H"
-    #include "createOutFile.H" // Create output variables and outfile
+    #include "createOutFile.H" // Create output variables and outfile  
     
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
     // Calculate analytical field at time t=0;
@@ -47,10 +47,6 @@ int main(int argc, char *argv[])
     
     U0.correctBoundaryConditions();     
        
-    // effective viscosity    
-    volScalarField nuEff(turbulence->nut() + nu);   
-    volSymmTensorField SymmGradU     = twoSymm(fvc::grad(U));
-    volSymmTensorField SymmGradUstar = twoSymm(fvc::grad(Ustar));
     while (runTime.loop())
     {   
         Info<< "Time = " << runTime.timeName()<< endl;

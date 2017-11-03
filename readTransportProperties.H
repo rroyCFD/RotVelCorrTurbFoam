@@ -21,24 +21,28 @@ Info << "Viscosity: " << nu.value() << endl;
 //  Read initial Velocity V_0
 dimensionedScalar Uinit
 (
-    transportProperties.lookup("Uinit")
+    "Uinit",
+    dimVelocity,    
+    transportProperties.lookupOrDefault<scalar>("Uinit", 0)
 );
 Info << "Velocity Scale: " << Uinit.value() << endl;
 
 //  Read length scale
 dimensionedScalar L
 (
-    transportProperties.lookup("L")
+    "L",
+    dimLength,
+    transportProperties.lookupOrDefault<scalar>("L", 1.0)
 );
 Info << "Length Scale: " << L.value() << endl;
 
 const Switch init
 (
-    transportProperties.lookup("init")
+    transportProperties.lookupOrDefault("init", false)
 );
 
 const word TaylorGreenDimension
 (
-    transportProperties.lookup("TaylorGreenDimension")   
+    transportProperties.lookupOrDefault<word>("TaylorGreenDimension", "2D")   
 );
 // ************************************************************************* //

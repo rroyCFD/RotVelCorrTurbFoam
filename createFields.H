@@ -115,7 +115,58 @@
         mesh,
         dimensionedVector("Uhat",dimensionSet(0, 1, -1, 0, 0, 0, 0),vector::zero)
     );
+
     
+    #include "createPhi.H"   
+    singlePhaseTransportModel laminarTransport(U, phi);
+
+    autoPtr<incompressible::turbulenceModel> turbulence
+    (
+        incompressible::turbulenceModel::New(U, phi, laminarTransport)
+    );
+          
+        
+    volScalarField nuEff
+    (
+        IOobject
+        (
+            "nuEff",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        //mesh,
+       turbulence->nut()
+    ); 
+
+    volSymmTensorField SymmGradU
+    (
+        IOobject
+        (
+            "SymmGradU",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+       twoSymm(fvc::grad(U))
+    ); 
+
+
+    volSymmTensorField SymmGradUstar
+    (
+        IOobject
+        (
+            "SymmGradUstar",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        twoSymm(fvc::grad(Ustar))
+    );
+
        
     Info<< "Reading field p\n" << endl;
     volScalarField p
@@ -130,24 +181,16 @@
         ),
         mesh
     );
+        
     
-    
-    #include "createPhi.H"
     label pRefCell = 0;
     scalar pRefValue = 0.0;
     setRefCell(p, mesh.solutionDict().subDict("PISO"), pRefCell, pRefValue);
 
     const dictionary& pisoDict = mesh.solutionDict().subDict("PISO");
     const bool pRefOn = pisoDict.lookupOrDefault("pRefOn", false);
-    Info << "pRefOn" << pRefOn << endl;
+    Info << "pRefOn: " << pRefOn << endl;
     
-    singlePhaseTransportModel laminarTransport(U, phi);
-
-    autoPtr<incompressible::turbulenceModel> turbulence
-    (
-        incompressible::turbulenceModel::New(U, phi, laminarTransport)
-    );
-        
-//     // Filter 
+    //     // Filter 
 //     autoPtr<LESfilter> filterPtr(LESfilter::New(U.mesh(), transportProperties));
 //     LESfilter& filter(filterPtr());
